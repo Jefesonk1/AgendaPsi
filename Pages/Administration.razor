@@ -1,0 +1,331 @@
+@page "/admin/usuarios"
+@inject IJSRuntime jsRuntime
+@using Microsoft.AspNetCore.Identity;
+@inject UserManager<IdentityUser> _UserManager
+@inject RoleManager<IdentityRole> _RoleManager
+
+<h3>Administração</h3>
+<AuthorizeView>
+    <Authorized>
+        @if (@context.User.IsInRole(ADMINISTRATION_ROLE))
+        {
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Email</th>
+                    <th>Editar</th>
+                    <th>Cargos</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var user in ColUsers)
+                {
+                    <tr>
+                        <td>@user.User.UserName</td>
+                        <td>@user.User.Email</td>
+                        <td>
+                            <button class="btn btn-primary"
+                                    @onclick="(() => EditUser(user.User))">
+                                Editar
+                            </button>
+                        </td>
+                        <td>
+                            @if (user.Roles.Count == 0)
+                            {
+                                <span>Usuário</span>
+                            }
+                            @foreach (var role in user.Roles)
+                            {
+                                if (@role == ADMINISTRATION_ROLE)
+                                {
+                                    <span>Administador</span>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            @if (ShowPopup)
+            {
+                <div class="modal" tabindex="-1" style="display:block" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3 class="modal-title">Editar Usuário</h3>
+                                <button type="button" class="close"
+                                        @onclick="ClosePopup">
+                                    <span aria-hidden="true">X</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                @if (objUser.Id != "")
+                                {
+                                    <p>@objUser.Id</p>
+                                }
+                                @if (objUser.Id != "")
+                                {
+                                    <p>@objUser.UserName</p>
+                                }
+                                else
+                                {
+                                    <input class="form-control m-2" type="text"
+                                           placeholder="Usuário"
+                                           @bind="objUser.UserName"/>
+                                }
+                                <input class="form-control m-2" type="text"
+                                       placeholder="Email"
+                                       @bind="objUser.Email"/>
+                                <input class="form-control m-2" type="password"
+                                       placeholder="Senha"
+                                       @bind="objUser.PasswordHash"/>
+                                <select class="form-control m-2"
+                                        @bind="@CurrentUserRole">
+                                    @foreach (var option in Options)
+                                    {
+                                        <option value="@option">
+                                            @option
+                                        </option>
+                                    }
+                                </select>
+                                <br/><br/>
+                                <button class="btn btn-primary mx-1"
+                                        @onclick="SaveUser">
+                                    Salvar
+                                </button>
+                                @if (objUser.Id != "")
+                                {
+                                    <button class="btn btn-danger mx-1"
+                                            @onclick="DeleteUser">
+                                        Excluir
+                                    </button>
+                                }
+                                <br/>
+                                <span style="color:red">@strError</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>You're not signed in as a user in @ADMINISTRATION_ROLE.</p>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>You're not loggged in.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    string ADMINISTRATION_ROLE = "Administrators";
+    System.Security.Claims.ClaimsPrincipal CurrentUser;
+
+    public class UserWithRoles
+    {
+        public IdentityUser User { get; set; }
+        public IList<string> Roles { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var RoleResult = await _RoleManager.FindByNameAsync(ADMINISTRATION_ROLE);
+        if (RoleResult == null)
+        {
+            await _RoleManager.CreateAsync(new IdentityRole(ADMINISTRATION_ROLE));
+        }
+        var user = await _UserManager.FindByNameAsync("jefesonk1@outlook.com");
+        if (user != null)
+        {
+            var UserResult = await _UserManager.IsInRoleAsync(user, ADMINISTRATION_ROLE);
+            if (!UserResult)
+            {
+                await _UserManager.AddToRoleAsync(user, ADMINISTRATION_ROLE);
+            }
+        }
+        CurrentUser = (await authenticationStateTask).User;
+        GetUsers();
+    }
+
+    IdentityUser objUser = new IdentityUser();
+    string CurrentUserRole { get; set; } = "Users";
+    List<UserWithRoles> ColUsers = new List<UserWithRoles>();
+    List<string> Options = new List<string>() { "Users", "Administrators" };
+    string strError = "";
+    bool ShowPopup = false;
+
+    void AddNewUser()
+    {
+        objUser = new IdentityUser();
+        objUser.PasswordHash = "*****";
+        objUser.Id = "";
+        ShowPopup = true;
+    }
+
+    async Task SaveUser()
+    {
+        try
+        {
+            if (objUser.Id != "")
+            {
+                var user = await _UserManager.FindByIdAsync(objUser.Id);
+                user.Email = objUser.Email;
+                await _UserManager.UpdateAsync(user);
+                if (objUser.PasswordHash != "*****")
+                {
+                    var resetToken = await _UserManager.GeneratePasswordResetTokenAsync(user);
+                    var passworduser = await _UserManager.ResetPasswordAsync(user, resetToken, objUser.PasswordHash);
+                    if (!passworduser.Succeeded)
+                    {
+                        if (passworduser.Errors.FirstOrDefault() != null)
+                        {
+                            strError = passworduser.Errors.FirstOrDefault().Description;
+                        }
+                        else
+                        {
+                            strError = "Pasword error";
+                        }
+                        return;
+                    }
+                }
+                var UserResult = await _UserManager.IsInRoleAsync(user, ADMINISTRATION_ROLE);
+                if ((CurrentUserRole == ADMINISTRATION_ROLE) & (!UserResult))
+                {
+                    await _UserManager.AddToRoleAsync(user, ADMINISTRATION_ROLE);
+                }
+                else
+                {
+                    if ((CurrentUserRole != ADMINISTRATION_ROLE) & (UserResult))
+                    {
+                        await _UserManager.RemoveFromRoleAsync(user, ADMINISTRATION_ROLE);
+                    }
+                }
+            }
+            else
+            {
+                var NewUser = new IdentityUser
+                {
+                    UserName = objUser.UserName,
+                    Email = objUser.Email
+                };
+                var CreateResult = await _UserManager.CreateAsync(NewUser, objUser.PasswordHash);
+                if (!CreateResult.Succeeded)
+                {
+                    if (CreateResult.Errors.FirstOrDefault() != null)
+                    {
+                        strError = CreateResult.Errors.FirstOrDefault().Description;
+                    }
+                    else
+                    {
+                        strError = "Create error";
+                    }
+                    return;
+                }
+                else
+                {
+                    if (CurrentUserRole == ADMINISTRATION_ROLE)
+                    {
+                        await _UserManager.AddToRoleAsync(NewUser, ADMINISTRATION_ROLE);
+                    }
+                }
+            }
+            ShowPopup = false;
+            GetUsers();
+        }
+        catch (Exception ex)
+        {
+            strError = ex.GetBaseException().Message;
+        }
+    }
+
+    async Task EditUser(IdentityUser _IdentityUser)
+    {
+        objUser = _IdentityUser;
+        var user = await _UserManager.FindByIdAsync(objUser.Id);
+        if (user != null)
+        {
+            var UserResult = await _UserManager.IsInRoleAsync(user, ADMINISTRATION_ROLE);
+            if (UserResult)
+            {
+                CurrentUserRole = ADMINISTRATION_ROLE;
+            }
+            else
+            {
+                CurrentUserRole = "Users";
+            }
+        }
+        ShowPopup = true;
+    }
+
+    async Task DeleteUser()
+    {
+        try
+        {
+            if (objUser == null || string.IsNullOrEmpty(objUser.Id))
+            {
+                strError = "Erro.";
+                return;
+            }
+            var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", "Tem certeza de que quer excluir esse usuário?");
+            if (!confirmed)
+            {
+                return;
+            }
+            var user = await _UserManager.FindByIdAsync(objUser.Id);
+            if (user != null)
+            {
+                var result = await _UserManager.DeleteAsync(user);
+                if (!result.Succeeded)
+                {
+                    strError = result.Errors?.FirstOrDefault()?.Description ?? "Falha ao excluir usuario.";
+                }
+                else
+                {
+                    objUser = new IdentityUser();
+                    GetUsers();
+                }
+            }
+            else
+            {
+                strError = "Usuário não encontrado.";
+            }
+        }
+        catch (Exception ex)
+        {
+            strError = ex.GetBaseException().Message;
+        }
+    }
+
+    void ClosePopup()
+    {
+        ShowPopup = false;
+    }
+
+    public void GetUsers()
+    {
+        strError = "";
+        ColUsers = new List<UserWithRoles>();
+        var usersWithRoles = _UserManager.Users.Select(x => new UserWithRoles
+        {
+            User = new IdentityUser
+            {
+                Id = x.Id,
+                UserName = x.UserName,
+                Email = x.Email,
+                PasswordHash = "*****"
+            },
+            Roles = _UserManager.GetRolesAsync(x).Result.ToList()
+        });
+        foreach (var item in usersWithRoles)
+        {
+            ColUsers.Add(item);
+        }
+    }
+
+}
