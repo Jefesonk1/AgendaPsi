@@ -112,3 +112,4 @@ C:\Users\Jefeson\source\repos\AgendaPsi\obj\Debug\net7.0\refint\AgendaPsi.dll
 C:\Users\Jefeson\source\repos\AgendaPsi\obj\Debug\net7.0\AgendaPsi.pdb
 C:\Users\Jefeson\source\repos\AgendaPsi\obj\Debug\net7.0\AgendaPsi.genruntimeconfig.cache
 C:\Users\Jefeson\source\repos\AgendaPsi\obj\Debug\net7.0\ref\AgendaPsi.dll
+C:\Users\Jefeson\source\repos\AgendaPsi\obj\Debug\net7.0\AgendaPsi.sourcelink.json

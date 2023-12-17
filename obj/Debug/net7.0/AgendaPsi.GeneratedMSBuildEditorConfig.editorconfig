@@ -30,6 +30,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Jefeson/source/repos/AgendaPsi/Pages/RealizarAgendamento.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUmVhbGl6YXJBZ2VuZGFtZW50by5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Jefeson/source/repos/AgendaPsi/Pages/VerificarAgenda.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVmVyaWZpY2FyQWdlbmRhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Jefeson/source/repos/AgendaPsi/Shared/LoginDisplay.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXExvZ2luRGlzcGxheS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 

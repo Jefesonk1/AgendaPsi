@@ -1,0 +1,17 @@
+﻿@page "/agendamento"
+@inject NavigationManager Navigation
+
+<AuthorizeView>
+    <Authorized>
+        <div class="container">
+            <h3>Fazer Agendamento</h3>
+            <p>Aqui estão todos os horários disponíveis para atendimento que você pode marcar.</p>
+            <iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0QJkT3eH3LATI2ZCdz1ycjBtfQqbtcUMUxXC3jrIa0CiwEUYUOvlJRJdOF7Hkkroe84cXt6JSB?gv=true" style="border: 0" width="100%" height="600" frameborder="0"></iframe>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        @{
+            Navigation.NavigateTo("/Identity/Account/Login", forceLoad: true);
+        }
+    </NotAuthorized>
+</AuthorizeView>
