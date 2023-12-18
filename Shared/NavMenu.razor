@@ -32,6 +32,21 @@
                 </div>
             }
         </AuthorizeView>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="orientacoes">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Orientações
+            </NavLink>
+        </div>
+        <AuthorizeView>
+            @if (@context.User.IsInRole(ADMINISTRATION_ROLE))
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="/admin/posts">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Gerenciar Publicações
+                    </NavLink>
+                </div>
+            }
+        </AuthorizeView>
         <AuthorizeView>
             @if (@context.User.IsInRole(ADMINISTRATION_ROLE))
             {

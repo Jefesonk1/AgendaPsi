@@ -1,0 +1,48 @@
+﻿@page "/orientacoes"
+@using AgendaPsi.Data
+@inject PostsService service
+@inject IJSRuntime JsRuntime
+
+<div class="container">
+    <h3>Links e Textos Úteis</h3>
+    <div class="container">
+        @if (Posts.Any())
+        {
+            @foreach (var post in Posts)
+            {
+                var link = $"post/{post.Id}"; 
+    
+                <div>
+                    <NavLink href="@link">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> @post.Title
+                    </NavLink>
+    
+                </div>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">
+                    <strong>Nenhum link disponível</strong>
+                </td>
+            </tr>
+        }
+    </div>
+</div>
+
+@code {
+
+    List<Posts> Posts = new List<Posts>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AtualizaPosts();
+    }
+
+    private async Task AtualizaPosts()
+    {
+        Posts = await service.RetornaPostAsync();
+    }
+
+}

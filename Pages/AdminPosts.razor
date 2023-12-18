@@ -1,0 +1,138 @@
+﻿@page "/admin/posts"
+@using AgendaPsi.Data
+@inject PostsService service
+@inject IJSRuntime JsRuntime
+
+@using AgendaPsi.RTEJS
+
+@code
+{
+    public Posts Post { get; set; } = new();
+
+    private async Task AdicionarPost()
+    {
+        await service.AddPostAsync(Post);
+        Post = new();
+        await AtualizaPosts();
+    }
+
+    RTEConfig rtecfg = new RTEConfig() { toolbar = "full", toolbarMobile = "basic" };
+    string? previewcode = "<b>Clique no botão para ver uma prévia</b>";
+    string? mycode = null; //if binded value is null , the <InitHtml> template will be used
+
+
+    void ShowHtmlCode()
+    {
+    //TODO: filter mycode here , remove Malicious Code
+
+        previewcode = mycode;
+        previewcode = Post.Description;
+    }
+
+    string changedmsg = "";
+
+    void EditorCodeChanged(string newcode)
+    {
+    //mycode already be setted from @bind-HtmlCode="mycode"
+        changedmsg = "changed at " + DateTime.Now.ToString("HH:mm:ss") + " , " + mycode.Length + " chars";
+    }
+}
+
+<AuthorizeView>
+    
+    <Authorized Context="Auth">
+<div class="container">
+    <h3>Adicionar Nova Publicação</h3>
+    <hr/>
+
+    <EditForm Model="@Post">
+        <div class="form-group">
+            <label for="nome">Título Da Publicação</label>
+            <input type="text" id="name" class="form-control" @bind-value="@Post.Title"/>
+        </div>
+        <br/>
+        <div class="form-group">
+            <label for="preço">Texto Publicação</label>
+            <RichTextEditor Config="rtecfg" @bind-HtmlCode="@Post.Description" OnHtmlCodeChanged="EditorCodeChanged">
+                <InitHtml>
+                </InitHtml>
+            </RichTextEditor>
+        </div>
+        <div class="text-center p-3 mb-3">
+            <button class="btn btn-info" @onclick="ShowHtmlCode">Ver Prévia</button> @changedmsg
+            <button class="btn btn-success" @onclick="AdicionarPost"> Adicionar</button>
+        </div>
+    </EditForm>
+    <div class="p-3 border rounded border-secondary">
+        @((MarkupString)previewcode)
+    </div>
+</div>
+@* <hr class="mt-8"/> *@
+    <div class="container mt-5">
+        <h3>Publicações</h3>
+
+        <div class="row bg-light">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Id</th>
+                    <th>Titulo</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (Posts.Any())
+                {
+                    @foreach (var post in Posts)
+                    {
+                        <tr>
+                            <td>@post.Id</td>
+                            <td>@post.Title</td>
+                            <td>
+                                <button class="btn btn-danger" @onclick="(() => ApagarPost(post))">Deletar</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6">
+                            <strong>Nenhuma publicação disponível</strong>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <div class="alert alert-success" role="alert" style="@alertStyle;">
+                Publicação excluida
+            </div>
+        </div>
+    </div>
+    </Authorized>
+</AuthorizeView>
+@code
+{
+    List<Posts> Posts = new List<Posts>();
+    string alertStyle = "display: none;";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AtualizaPosts();
+    }
+
+    private async Task AtualizaPosts()
+    {
+        Posts = await service.RetornaPostAsync();
+    }
+
+    private async Task ApagarPost(Posts post)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", "Você tem certeza?");
+        if (confirmed)
+        {
+            await service.DeletePostAsync(post);
+            await AtualizaPosts();
+            alertStyle = "";
+        }
+    }
+}

@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AgendaPsi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b691d72629c9a1f885a7e420c5df89ef280118f7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8a7d7e778e709df869708ccf71f53a844ae72d43")]
 [assembly: System.Reflection.AssemblyProductAttribute("AgendaPsi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AgendaPsi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

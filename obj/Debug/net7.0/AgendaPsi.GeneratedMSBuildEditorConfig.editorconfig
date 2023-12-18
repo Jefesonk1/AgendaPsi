@@ -26,8 +26,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5pc3RyYXRpb24ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Jefeson/source/repos/AgendaPsi/Pages/AdminPosts.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWRtaW5Qb3N0cy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Jefeson/source/repos/AgendaPsi/Pages/Index.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Jefeson/source/repos/AgendaPsi/Pages/Orientacoes.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT3JpZW50YWNvZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Jefeson/source/repos/AgendaPsi/Pages/RealizarAgendamento.razor]
@@ -36,6 +44,14 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Jefeson/source/repos/AgendaPsi/Pages/VerificarAgenda.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVmVyaWZpY2FyQWdlbmRhLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Jefeson/source/repos/AgendaPsi/Pages/ViewPost.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVmlld1Bvc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Jefeson/source/repos/AgendaPsi/RTEJS/RichTextEditor.razor]
+build_metadata.AdditionalFiles.TargetPath = UlRFSlNcUmljaFRleHRFZGl0b3IucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Jefeson/source/repos/AgendaPsi/Shared/LoginDisplay.razor]

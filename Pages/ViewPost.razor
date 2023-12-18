@@ -1,0 +1,35 @@
+﻿@page "/post/{id:int}"
+@using AgendaPsi.Data
+@inject PostsService service
+
+<div class="row m-5">
+    @if (Post != null)
+    {
+        <div>
+            <h1>@Post.Title</h1>
+            
+           @((MarkupString) @Post.Description)
+        </div>
+    }
+    else
+    {
+        <p>Post não encontrado.</p>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Posts Post;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AtualizaPosts();
+    }
+
+    private async Task AtualizaPosts()
+    {
+        Post = await service.GetPostByIdAsync(Id);
+    }
+}
